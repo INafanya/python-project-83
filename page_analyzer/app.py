@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, render_template
 
 
 app = Flask(__name__)
@@ -9,5 +9,7 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 
 
 @app.route('/')
-def urls_index():
-    return  'Hello!'
+def index():
+    return render_template(
+        'index.html'
+    )
