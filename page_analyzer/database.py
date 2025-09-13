@@ -99,3 +99,5 @@ def get_all_urls():
     finally:
         cursor.close()
         conn.close()
+
+
