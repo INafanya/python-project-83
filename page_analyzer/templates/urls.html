@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Сайты - Анализатор страниц{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 col-md-10 col-lg-8 mx-auto">
+        <h1 class="h3">Сайты</h1>
+        <div class="table-responsive">
+            <table class="table table-striped" data-test="urls">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>URL</th>
+                        <th>Последняя проверка</th>
+                        <th>Код ответа</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if urls %}
+                        {% for url in urls %}
+                        <tr>
+                            <td>{{ url[0] }}</td>
+                            <td><a href="{{ url_for('url_show', url_id=url[0]) }}">{{ url[1] }}</a></td>
+                            <td>{{ url[2].strftime('%Y-%m-%d') if url[2] and url[2] is not string else (url[2][:10] if url[2] else '-') }}</td>
+                            <td>{{ url[3] if url[3] else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">
+                                Пока нет добавленных сайтов
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 
