@@ -1,14 +1,106 @@
-from flask import(
+import psycopg2
+import os
+from dotenv import load_dotenv
+
+from page_analyzer.db_functions import (
+    get_all_urls,
+    add_url,
+    get_url_id_by_name,
+    get_url_by_id,
+    get_url_details,
+    add_url_check
+)
+from page_analyzer.urls_functions import validate_url
+
+from flask import (
+    flash,
     Flask,
     render_template,
-    )
+    request,
+    redirect,
+    url_for,
+)
 
-from dotenv import load_dotenv
 
 load_dotenv()
 
+DATABASE_URL = os.getenv("DATABASE_URL")
+conn = psycopg2.connect(DATABASE_URL)
+
 app = Flask(__name__)
 
-@app.route('/')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
+
+
+@app.route("/urls", methods=["GET", "POST"])
+def urls():
+    if request.method == "POST":
+        url = request.form.get("url")
+        validate_error = validate_url(url)
+
+        if validate_error:
+            flash(validate_error, "error")
+            return render_template("index.html", url=url), 422
+
+        try:
+            existing_url = get_url_id_by_name(url)
+
+            if existing_url:
+                flash("Страница уже добавлена", "info")
+                return redirect(url_for("url_detail", url_id=existing_url))
+
+            url_id = add_url(url)
+            flash("Страница успешно добавлена", "success")
+            return redirect(url_for('url_detail', url_id=url_id))
+
+        except Exception as exc:
+            print(f'Error adding URL: {exc}')
+            flash("При добавлении URL произошла ошибка", "error")
+            return render_template("index.html", url=url), 500
+
+    return render_template("urls.html", urls=get_all_urls())
+
+
+@app.route("/urls/<int:url_id>")
+def url_detail(url_id):
+    url_data = get_url_by_id(url_id)
+    print(f'url_data: {url_data}')
+    if url_data is None :
+        flash("Сайт не найден", "error")
+        return redirect(url_for("index")), 404
+
+    checks = get_url_details(url_id)
+
+    return render_template("url_detail.html", url=url_data, checks=checks)
+
+
+@app.route("/urls/<int:url_id>/checks", methods=["POST"])
+def url_checks(url_id):
+    url_data = get_url_by_id(url_id)
+    print(f'url: {url_data}')
+    
+    if url_data is None:
+        flash("Сайт не найден", "error")
+        return redirect(url_for("urls")), 404
+
+    try:
+        check_id = add_url_check(url_id)
+        print(f'check_id: {check_id}')
+        if check_id:
+            flash("Проверка страницы успешно проведена", 'success')
+
+        else:
+            flash("Не удалось выполнить проверку", "error")
+
+    except Exception:
+        flash("Произошла ошибка при проверке", 'error')
+
+    return redirect(url_for('url_detail', url_id=url_id))
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
