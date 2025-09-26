@@ -1,4 +1,4 @@
-import psycopg2
+# import psycopg2
 import os
 from dotenv import load_dotenv
 
@@ -24,11 +24,7 @@ from flask import (
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-conn = psycopg2.connect(DATABASE_URL)
-
 app = Flask(__name__)
-
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 @app.route("/")
@@ -82,7 +78,7 @@ def url_detail(url_id):
 def url_checks(url_id):
     url_data = get_url_by_id(url_id)
     print(f'url: {url_data}')
-    
+
     if url_data is None:
         flash("Сайт не найден", "error")
         return redirect(url_for("urls")), 404
