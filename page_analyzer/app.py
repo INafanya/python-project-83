@@ -10,7 +10,7 @@ from page_analyzer.db_functions import (
     get_url_details,
     add_url_check
 )
-from page_analyzer.urls_functions import validate_url
+from page_analyzer.urls_functions import validate_url, get_page_data
 
 from flask import (
     flash,
@@ -54,7 +54,6 @@ def urls():
             return redirect(url_for('url_detail', url_id=url_id))
 
         except Exception as exc:
-            print(f'Error adding URL: {exc}')
             flash("При добавлении URL произошла ошибка", "error")
             return render_template("index.html", url=url), 500
 
@@ -64,7 +63,7 @@ def urls():
 @app.route("/urls/<int:url_id>")
 def url_detail(url_id):
     url_data = get_url_by_id(url_id)
-    print(f'url_data: {url_data}')
+
     if url_data is None :
         flash("Сайт не найден", "error")
         return redirect(url_for("index")), 404
@@ -77,23 +76,20 @@ def url_detail(url_id):
 @app.route("/urls/<int:url_id>/checks", methods=["POST"])
 def url_checks(url_id):
     url_data = get_url_by_id(url_id)
-    print(f'url: {url_data}')
 
     if url_data is None:
         flash("Сайт не найден", "error")
         return redirect(url_for("urls")), 404
 
     try:
-        check_id = add_url_check(url_id)
-        print(f'check_id: {check_id}')
-        if check_id:
-            flash("Проверка страницы успешно проведена", 'success')
+        check_data = get_page_data(url_data['name'])
 
-        else:
-            flash("Не удалось выполнить проверку", "error")
+        if check_data['status_code'] == 200:
+            add_url_check(url_id, check_data)
+            flash("Проверка страницы проведена успешно. Данные проверки добавлены в БД", 'success')
 
     except Exception:
-        flash("Произошла ошибка при проверке", 'error')
+        flash("Не удалось получить данные по адресу", "error")
 
     return redirect(url_for('url_detail', url_id=url_id))
 

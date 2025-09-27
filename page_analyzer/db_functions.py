@@ -7,11 +7,8 @@ from psycopg2.extras import RealDictCursor
 
 load_dotenv()
 
-# DATABASE_URL = os.getenv("DATABASE_URL")
-# conn = psycopg2.connect(DATABASE_URL)
 
 def get_connection():
-    """Get DB connection"""
     database_url = os.getenv("DATABASE_URL")
     return psycopg2.connect(database_url)
 
@@ -23,7 +20,6 @@ def get_url_id_by_name(url):
             (url,),
         )
         result = cur.fetchone()
-        print(result)
     return result[0] if result else None
 
 
@@ -42,7 +38,6 @@ def add_url(url):
 
 def get_all_urls():
     conn = get_connection()
-    print(f'-----------conn: {conn}')
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute("""
             SELECT
@@ -66,7 +61,7 @@ def get_url_by_id(url_id):
     conn = get_connection()
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute(
-            "SELECT * FROM urls WHERE id = %s;", (url_id,),
+            "SELECT id, name, created_at FROM urls WHERE id = %s;", (url_id,),
         )
         url = cur.fetchone()
     return url
@@ -76,21 +71,38 @@ def get_url_details(url_id):
     conn = get_connection()
     with conn.cursor(cursor_factory=RealDictCursor) as cur:
         cur.execute(
-            "SELECT * FROM url_checks WHERE url_id = %s "
-            "ORDER BY created_at DESC",
-            (url_id,),
+            """SELECT id,
+                    url_id,
+                    status_code,
+                    h1,
+                    title,
+                    description,
+                    created_at
+                FROM url_checks WHERE url_id = %s
+                ORDER BY created_at DESC""",
+                (url_id,),
         )
         checks = cur.fetchall()
-        print(f'checks: {checks}')
     return checks
 
 
-def add_url_check(url_id):
+def add_url_check(url_id, check_data):
     conn = get_connection()
     with conn.cursor() as cur:
         cur.execute(
-            "INSERT INTO url_checks (url_id) VALUES (%s) RETURNING id;",
-            (url_id,),
+            """INSERT INTO url_checks (
+                    url_id,
+                    status_code,
+                    h1,
+                    title,
+                    description
+                    )
+                VALUES (%s, %s, %s, %s, %s) RETURNING id;""",
+                    (url_id,
+                    check_data['status_code'],
+                    check_data['h1'],
+                    check_data['title'],
+                    check_data['description']),
         )
         check_id = cur.fetchone()[0]
         conn.commit()
