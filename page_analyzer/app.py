@@ -1,4 +1,3 @@
-# import psycopg2
 import os
 from dotenv import load_dotenv
 
@@ -27,9 +26,11 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
+HOME_PAGE = "index.html"
+
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template(HOME_PAGE)
 
 
 @app.route("/urls", methods=["GET", "POST"])
@@ -40,7 +41,7 @@ def urls():
 
         if validate_error:
             flash(validate_error, "error")
-            return render_template("index.html", url=url), 422
+            return render_template(HOME_PAGE, url=url), 422
 
         try:
             existing_url = get_url_id_by_name(url)
@@ -53,9 +54,9 @@ def urls():
             flash("Страница успешно добавлена", "success")
             return redirect(url_for('url_detail', url_id=url_id))
 
-        except Exception as exc:
+        except Exception:
             flash("При добавлении URL произошла ошибка", "error")
-            return render_template("index.html", url=url), 500
+            return render_template(HOME_PAGE, url=url), 500
 
     return render_template("urls.html", urls=get_all_urls())
 
