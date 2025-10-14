@@ -47,7 +47,7 @@ def urls():
             existing_url = get_url_id_by_name(url)
 
             if existing_url:
-                flash("Страница уже добавлена", "info")
+                flash("Страница уже существует", "info")
                 return redirect(url_for("url_detail", url_id=existing_url))
 
             url_id = add_url(url)
@@ -87,10 +87,10 @@ def url_checks(url_id):
 
         if check_data['status_code'] == 200:
             add_url_check(url_id, check_data)
-            flash("Проверка страницы проведена успешно. Данные проверки добавлены в БД", 'success')
+            flash("Страница успешно проверена", 'success')
 
     except Exception:
-        flash("Не удалось получить данные по адресу", "error")
+        flash("Произошла ошибка при проверке", "error")
 
     return redirect(url_for('url_detail', url_id=url_id))
 

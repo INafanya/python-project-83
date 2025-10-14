@@ -55,10 +55,7 @@
                 <td>{{ check.description or '' }}</td>
                 <td>{{ check.created_at.strftime('%Y-%m-%d') if check.created_at else '' }}</td>
               </tr>
-            {% else %}
-              <tr>
-                <td colspan="6" class="text-center">Проверки ещё не проводились</td>
-              </tr>
+
             {% endfor %}
           </tbody>
         </table>

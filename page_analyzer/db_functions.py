@@ -13,11 +13,12 @@ def get_connection():
     return psycopg2.connect(database_url)
 
 def get_url_id_by_name(url):
+    normalized_url = normalize_url(url)
     conn = get_connection()
     with conn.cursor() as cur:
         cur.execute(
             "SELECT id FROM urls WHERE name = %s;",
-            (url,),
+            (normalized_url,),
         )
         result = cur.fetchone()
     return result[0] if result else None
