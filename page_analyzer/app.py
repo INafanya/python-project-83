@@ -17,16 +17,17 @@ from flask import (
     render_template,
     request,
     redirect,
-    url_for,
+    url_for
 )
 
 
 load_dotenv()
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-
 HOME_PAGE = "index.html"
+
 
 @app.route("/")
 def index():
@@ -65,7 +66,7 @@ def urls():
 def url_detail(url_id):
     url_data = get_url_by_id(url_id)
 
-    if url_data is None :
+    if url_data is None:
         flash("Сайт не найден", "error")
         return redirect(url_for("index")), 404
 

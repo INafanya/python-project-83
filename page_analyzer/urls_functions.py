@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import validators
 from urllib.parse import urlparse
 
+
 def normalize_url(url):
     parsed_url = urlparse(url)
     normalized_url = f"{parsed_url.scheme}://{parsed_url.netloc}"

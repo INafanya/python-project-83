@@ -12,6 +12,7 @@ def get_connection():
     database_url = os.getenv("DATABASE_URL")
     return psycopg2.connect(database_url)
 
+
 def get_url_id_by_name(url):
     normalized_url = normalize_url(url)
     conn = get_connection()
