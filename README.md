@@ -17,7 +17,6 @@ PostgresSQL is used for data storage.
 - Analysis of title and description tags.
 - Display of check results on the user interface.
 
-### **Demo**
 
 [Page Analyzer Demo](https://python-project-83-fvmx.onrender.com)
 
