@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-from page_analyzer.db_functions import (
+from page_analyzer.db import (
     get_all_urls,
     add_url,
     get_url_id_by_name,
@@ -9,7 +9,8 @@ from page_analyzer.db_functions import (
     get_url_details,
     add_url_check
 )
-from page_analyzer.urls_functions import validate_url, get_page_data
+from page_analyzer.url_normalizer import validate_url
+from page_analyzer.parser import get_page_data
 
 from flask import (
     flash,
