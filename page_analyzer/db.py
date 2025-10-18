@@ -1,9 +1,10 @@
-import psycopg2
 import os
 
+import psycopg2
 from dotenv import load_dotenv
-from page_analyzer.url_normalizer import normalize_url
 from psycopg2.extras import RealDictCursor
+
+from page_analyzer.url_normalizer import normalize_url
 
 load_dotenv()
 

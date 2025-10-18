@@ -1,26 +1,18 @@
 import os
+
 from dotenv import load_dotenv
+from flask import Flask, flash, redirect, render_template, request, url_for
 
 from page_analyzer.db import (
-    get_all_urls,
     add_url,
-    get_url_id_by_name,
+    add_url_check,
+    get_all_urls,
     get_url_by_id,
     get_url_details,
-    add_url_check
+    get_url_id_by_name,
 )
-from page_analyzer.url_normalizer import validate_url
 from page_analyzer.parser import get_page_data
-
-from flask import (
-    flash,
-    Flask,
-    render_template,
-    request,
-    redirect,
-    url_for
-)
-
+from page_analyzer.url_normalizer import validate_url
 
 load_dotenv()
 
